@@ -1,0 +1,240 @@
+body {
+    position: absolute;
+}
+
+.collapse .items {
+    padding: 10px 15px;
+    border-top: 1px solid #ebebeb;
+}
+
+.collapse .items .image {
+    width: 10%;
+    position: relative;
+    -webkit-box-flex: 0;
+    max-width: 10%;
+    margin-right: 15px;
+}
+
+.collapse .items .title {
+    font-weight: 700;
+    -webkit-box-flex: 1;
+    -ms-flex: 1;
+    flex: 1;
+    padding-right: 15px;
+    width: 70%;
+}
+
+.collapse .items .quantity {
+    display: block;
+    width: 100%;
+    font-weight: 400;
+    color: gray;
+}
+
+.product-header {
+    height: 65px;
+}
+
+.header-search-block {
+    position: relative;
+}
+
+.autocomplete-suggestions {
+    /* display: none; */
+    background-color: #fff;
+    padding: 10px;
+    overflow-y: scroll;
+    height: 300px;
+    -webkit-box-shadow: 2px 1px 6px 0 #000;
+    box-shadow: 2px 1px 6px 0 #000;
+    position: absolute;
+    top: 55px;
+    z-index: 9999;
+    width: 100%;
+}
+
+.autocomplete-suggestions .autocomplete-suggestion {
+    margin: 5px 0;
+    padding: 5px 0;
+    border-bottom: 1px solid #e1e1e1;
+}
+
+.toast-container {
+    position: fixed;
+    min-height: 200px;
+    top: 40px;
+    right: 0;
+    width: 400px;
+    z-index: 9999999;
+}
+
+.toast,
+.toast1 {
+    position: fixed;
+    top: 40px;
+}
+
+.toast,
+.toast1 {
+    position: fixed;
+    top: 100px;
+    right: 0;
+    width: 400px;
+    z-index: 9999999;
+}
+
+.toast {
+    background-color: #d4edda;
+}
+
+#toast-danger {
+    background-color: #f8d7da;
+}
+
+hr {
+    margin-bottom: 0 !important;
+}
+
+.nav-pills li {
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid #ccc;
+}
+
+footer {
+    border-top: 1px solid #ccc;
+}
+
+#notfound {
+    position: relative;
+    height: 500px;
+    background-color: #fafbfd;
+}
+
+#notfound .notfound {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    -webkit-transform: translate(-50%, -50%);
+    -ms-transform: translate(-50%, -50%);
+    transform: translate(-50%, -50%);
+}
+
+.notfound {
+    max-width: 520px;
+    width: 100%;
+    text-align: center;
+}
+
+.notfound .notfound-bg {
+    position: absolute;
+    left: 0px;
+    right: 0px;
+    top: 50%;
+    -webkit-transform: translateY(-50%);
+    -ms-transform: translateY(-50%);
+    transform: translateY(-50%);
+    z-index: -1;
+}
+
+.notfound .notfound-bg>div {
+    width: 100%;
+    background: #fff;
+    border-radius: 90px;
+    height: 125px;
+}
+
+.notfound .notfound-bg>div:nth-child(1) {
+    -webkit-box-shadow: 5px 5px 0px 0px #f3f3f3;
+    box-shadow: 5px 5px 0px 0px #f3f3f3;
+}
+
+.notfound .notfound-bg>div:nth-child(2) {
+    -webkit-transform: scale(1.3);
+    -ms-transform: scale(1.3);
+    transform: scale(1.3);
+    -webkit-box-shadow: 5px 5px 0px 0px #f3f3f3;
+    box-shadow: 5px 5px 0px 0px #f3f3f3;
+    position: relative;
+    z-index: 10;
+}
+
+.notfound .notfound-bg>div:nth-child(3) {
+    -webkit-box-shadow: 5px 5px 0px 0px #f3f3f3;
+    box-shadow: 5px 5px 0px 0px #f3f3f3;
+    position: relative;
+    z-index: 90;
+}
+
+.notfound h1 {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 86px;
+    text-transform: uppercase;
+    font-weight: 700;
+    margin-top: 0;
+    margin-bottom: 8px;
+    color: #151515;
+}
+
+.notfound h2 {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 26px;
+    margin: 0;
+    font-weight: 700;
+    color: #151515;
+}
+
+.notfound a {
+    font-family: 'Quicksand', sans-serif;
+    font-size: 14px;
+    text-decoration: none;
+    text-transform: uppercase;
+    background: #18e06f;
+    display: inline-block;
+    padding: 15px 30px;
+    border-radius: 5px;
+    color: #fff;
+    font-weight: 700;
+    margin-top: 20px;
+}
+
+.notfound-social {
+    margin-top: 20px;
+}
+
+.notfound-social>a {
+    display: inline-block;
+    height: 40px;
+    line-height: 40px;
+    width: 40px;
+    font-size: 14px;
+    color: #fff;
+    background-color: #dedede;
+    margin: 3px;
+    padding: 0px;
+    -webkit-transition: 0.2s all;
+    transition: 0.2s all;
+}
+
+.notfound-social>a:hover {
+    background-color: #18e06f;
+}
+
+@media only screen and (max-width: 767px) {
+    .notfound .notfound-bg {
+        width: 287px;
+        margin: auto;
+    }
+    .notfound .notfound-bg>div {
+        height: 85px;
+    }
+}
+
+@media only screen and (max-width: 480px) {
+    .notfound h1 {
+        font-size: 68px;
+    }
+    .notfound h2 {
+        font-size: 18px;
+    }
+}

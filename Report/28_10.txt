@@ -1,0 +1,7 @@
+Cả 2 tạo thêm branch cá nhân (hieu, khanh)
+Thêm data cho bảng products (50 products)
+Làm các chức năng thêm sửa xoá product, xử lí vấn đề upload multiple
+Đẩy data lên trang index
+Tạo query lấy data để phục vụ vẽ biểu đồ
+Bắt đầu online discord 13h30 -> 17h, 20h30 -> 23h50
+Làm cả 2 share screen mỗi người làm 1 task, ai lỗi hỏi cả 2 cùng fix

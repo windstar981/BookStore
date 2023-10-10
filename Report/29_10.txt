@@ -1,0 +1,8 @@
+- Làm giao diện order cho customer
+- Trang profile customer
+- Trang product theo category
+- Session hiển thị sản phẩm gợi ý hôm nay
+- Làm data tạo order
+- Làm dashboard thống kê dữ liệu
+- Fix các lỗi lặt vặt
+- online discord 13h30 -> 17h, 20h30 -> 1h50p

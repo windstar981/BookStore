@@ -1,0 +1,9 @@
+.simplebar-content-wrapper{
+    height: 100% !important;
+}
+
+.page-tools__right-item .button-icon{
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 15px;
+}
