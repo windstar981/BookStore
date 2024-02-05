@@ -1,2 +1,0 @@
-- Thêm, Sửa, Xoá Category
-- Sửa các lỗi logic

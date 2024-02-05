@@ -25,7 +25,7 @@ if ($_SESSION['level'] == 2) {
             $sql1 = "SELECT count(u_id) as count from users";
             $count_u = mysqli_fetch_assoc(mysqli_query($conn, $sql1));
             ?>
-            <h1 class="page-header__title">Admin <span class="text-grey">(<?php echo $count_u['count'] ?>)</span></h1>
+            <h1 class="page-header__title"><?= getLang('admin') ?> <span class="text-grey">(<?php echo $count_u['count'] ?>)</span></h1>
         </div>
         <div class="page-tools">
             <div class="page-tools__breadcrumbs">
@@ -42,12 +42,12 @@ if ($_SESSION['level'] == 2) {
                                     </svg>
                                 </a>
                             </li>
-                            <li class="breadcrumbs__item disabled"><a class="breadcrumbs__link" href="#"><span>Quản lý</span>
+                            <li class="breadcrumbs__item disabled"><a class="breadcrumbs__link" href="#"><span><?= getLang('manage')?></span>
                                     <svg class="icon-icon-keyboard-right breadcrumbs__arrow">
                                         <use xlink:href="#icon-keyboard-right"></use>
                                     </svg></a>
                             </li>
-                            <li class="breadcrumbs__item active"><span class="breadcrumbs__link">Nhân viên</span>
+                            <li class="breadcrumbs__item active"><span class="breadcrumbs__link"><?= getLang('employee') ?></span>
                             </li>
                         </ol>
                     </div>
@@ -59,13 +59,13 @@ if ($_SESSION['level'] == 2) {
             $errors = "";
             switch ($_GET['errors']) {
                 case '1':
-                    $errors = "Tên đăng nhập đã tồn tại";
+                    $errors = getLang('username_had');
                     break;
                 case '2':
-                    $errors = "Mật khẩu không khớp";
+                    $errors = getLang('password_mismatch');
                     break;
                 case '3':
-                    $errors = "Vui lòng nhập đủ thông tin";
+                    $errors = getLang('enter_all_info');
                     break;
             }
         ?>
@@ -75,7 +75,7 @@ if ($_SESSION['level'] == 2) {
         <?php endif; ?>
         <div class="mb-4">
 
-            <button class="btn btn-primary" data-modal="#addMessage">Thêm Admin</button>
+            <button class="btn btn-primary" data-modal="#addMessage"><?= getLang('add_admin') ?></button>
         </div>
 
         <div class="toolbox">
@@ -91,7 +91,7 @@ if ($_SESSION['level'] == 2) {
                                             <use xlink:href="#icon-search"></use>
                                         </svg>
                                     </div>
-                                    <input class="input" type="text" placeholder="Search Customer">
+                                    <input class="input" type="text" >
                                 </div>
                             </form>
                         </div>
@@ -114,14 +114,14 @@ if ($_SESSION['level'] == 2) {
                     </colgroup>
                     <thead class="table__header">
                         <tr class="table__header-row">
-                            <th>
+                            <th style="width: 100px;">
                                 <div class="table__checkbox table__checkbox--all">
-                                    STT
+                                    <?= getLang('STT') ?>
                                 </div>
                             </th>
-                            <th class="table__th-sort"><span class="align-middle">Họ tên</span>
+                            <th class="table__th-sort"><span class="align-middle"><?= getLang('username') ?></span>
                             </th>
-                            <th class="table__th-sort"><span class="align-middle">Tên đăng nhập</span>
+                            <th class="table__th-sort"><span class="align-middle"><?= getLang('fullname') ?></span>
                             </th>
 
                             <th class="table__actions"></th>
@@ -156,12 +156,12 @@ if ($_SESSION['level'] == 2) {
                                                     <li class="dropdown-items__item"><a data-user="<?php echo $user['u_id'] ?>" user-name="<?php echo $user['u_name'] ?>" data-modal="#changePass" class="dropdown-items__link change-pass"><span class="dropdown-items__link-icon">
                                                                 <svg class="icon-icon-task">
                                                                     <use xlink:href="#icon-task"></use>
-                                                                </svg></span><span class="button__text">Đặt lại mật khẩu</span></a>
+                                                                </svg></span><span class="button__text"><?= getLang('set_pd') ?></span></a>
                                                     </li>
                                                     <li class="dropdown-items__item"><a href="core/delete-user.php?id=<?php echo $user['u_id'] ?>" class="dropdown-items__link"><span class="dropdown-items__link-icon">
                                                                 <svg class="icon-icon-trash">
                                                                     <use xlink:href="#icon-trash"></use>
-                                                                </svg></span>Xoá</a>
+                                                                </svg></span><?= getLang('delete') ?></a>
                                                     </li>
                                                 </ul>
                                             </div>
@@ -221,7 +221,7 @@ if ($_SESSION['level'] == 2) {
                 </button>
                 <div class="modal__header">
                     <div class="modal__container">
-                        <h2 class="modal__title">Thêm Admin</h2>
+                        <h2 class="modal__title"><?= getLang('add_admin') ?></h2>
                     </div>
                 </div>
                 <div class="modal__body">
@@ -229,32 +229,32 @@ if ($_SESSION['level'] == 2) {
                         <form id="form-users" action="core/add-user.php" method="POST">
                             <div class="row">
                                 <div class="col-12 form-group form-group--lg">
-                                    <label class="form-label form-label--sm">Tên đăng nhập</label>
+                                    <label class="form-label form-label--sm"><?= getLang('username') ?></label>
                                     <div class="input-group">
                                         <input class="input" name="username" type="text" placeholderrequired>
                                     </div>
                                 </div>
                                 <div class="col-12 form-group form-group--lg">
-                                    <label class="form-label form-label--sm">Họ tên</label>
+                                    <label class="form-label form-label--sm"><?= getLang('fullname') ?></label>
                                     <div class="input-group">
                                         <input class="input" name="fullname" type="text" placeholderrequired>
                                     </div>
                                 </div>
                                 <div class="col-12 form-group form-group--lg">
-                                    <label class="form-label form-label--sm">Mật khẩu</label>
+                                    <label class="form-label form-label--sm"><?= getLang('password') ?></label>
                                     <div class="input-group">
                                         <input class="input" name="password" type="password" required>
                                     </div>
                                 </div>
                                 <div class="col-12 form-group form-group--lg">
-                                    <label class="form-label form-label--sm">Nhập lại mật khẩu</label>
+                                    <label class="form-label form-label--sm"><?= getLang('re_password') ?></label>
                                     <div class="input-group">
                                         <input class="input" name="rpassword" type="password" required>
                                     </div>
                                 </div>
                                 <div class="col-auto ml-auto">
                                     <button type="submit" id="add-user" name="add-user" class="button button--primary" data-dismiss="modal">
-                                        Thêm
+                                        <?=getLang('add')  ?>
                                     </button>
                                 </div>
                             </div>
@@ -285,7 +285,7 @@ if ($_SESSION['level'] == 2) {
                 </button>
                 <div class="modal__header">
                     <div class="modal__container">
-                        <h2 class="modal__title">Đặt lại mật khẩu</h2>
+                        <h2 class="modal__title"><?= getLang('set_pd') ?></h2>
                     </div>
                 </div>
                 <div class="modal__body">
@@ -293,13 +293,13 @@ if ($_SESSION['level'] == 2) {
                         <form id="form-change-pass" data-user="" class="m-auto" style="max-width: 600px" method="POST">
                             <div class="row">
                                 <div class="col-12 form-group form-group--lg">
-                                    <label class="form-label form-label--sm">Tên đăng nhập</label>
+                                    <label class="form-label form-label--sm"><?= getLang('username') ?></label>
                                     <div class="input-group">
                                         <input disabled id="username" class="form-control" id="exampleFormControlInput2" type="text" placeholderrequired>
                                     </div>
                                 </div>
                                 <div class="col-12 form-group form-group--lg">
-                                    <label class="form-label form-label--sm">Mật khẩu</label>
+                                    <label class="form-label form-label--sm"><?= getLang('password') ?></label>
                                     <div class="input-group">
                                         <input id="pass" class="form-control" id="exampleFormControlInput3" name="password" type="password" required>
                                     </div>
@@ -307,7 +307,7 @@ if ($_SESSION['level'] == 2) {
 
                                 <div class="col-auto ml-auto">
                                     <button type="submit" id="submit-pass" name="add-user" class="button button--primary" data-dismiss="modal">
-                                        Lưu thay đổi
+                                        <?= getLang('save') ?>
                                     </button>
                                 </div>
                             </div>

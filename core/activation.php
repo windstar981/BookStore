@@ -1,7 +1,7 @@
 <?php
 include('../config/db_connect.php');
-if (isset($_GET['accout'])) {
-    $email = $_GET['accout'];
+if (isset($_GET['account'])) {
+    $email = $_GET['account'];
     $code = $_GET['code'];
     $sql = "SELECT * from customers where cus_mail = '$email' and activation_code = '$code'";
     $res = mysqli_query($conn, $sql);

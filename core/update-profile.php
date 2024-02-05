@@ -1,5 +1,4 @@
 <?php
-
 include('../config/db_connect.php');
 $errors = [];
 if (isset($_GET['id']) and isset($_POST['update'])) {
@@ -20,6 +19,7 @@ if (isset($_GET['id']) and isset($_POST['update'])) {
             $query = "UPDATE customers set cus_name = '$name', cus_add = '$address', cus_tel = '$tel' where cus_id = '$id'";
             $result = mysqli_query($conn, $query);
             if (!$result) header("Location: ../404.php");
+            $_SESSION['name'] = $name;
             header("Location: ../profile.php");
         }
     }

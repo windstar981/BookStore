@@ -1,6 +1,8 @@
 <?php
 
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 
 include("config/db_connect.php");
 
@@ -42,13 +44,12 @@ if (isset($_POST['change'])) {
 <?php require_once("templates/header.php") ?>
 
 <section class="breadcrumb-section">
-    <h2 class="sr-only">Site Breadcrumb</h2>
     <div class="container">
         <div class="breadcrumb-contents">
             <nav aria-label="breadcrumb">
                 <ol class="breadcrumb">
-                    <li class="breadcrumb-item"><a href="index.php">Trang chủ</a></li>
-                    <li class="breadcrumb-item active">Đổi mật khẩu</li>
+                    <li class="breadcrumb-item"><a href="index.php"><?= getLang('home') ?></a></li>
+                    <li class="breadcrumb-item active"><?= getLang('change_pass') ?></li>
                 </ol>
             </nav>
         </div>
@@ -69,41 +70,26 @@ if (isset($_POST['change'])) {
                     <ul class="nav nav-pills flex-column mb-auto">
                         <li class="nav-item">
                             <a href="profile.php" class="nav-link " aria-current="page">
-                                Thông tin cá nhân
+                            <?= getLang('info_person') ?>
                             </a>
                         </li>
                         <li class="nav-item">
                             <a href="change-password.php" class="nav-link active" aria-current="page">
-
-                                Đổi mật khẩu
-                            </a>
-                        </li>
-                        <li>
-                            <a href="customer-orders.php" class="nav-link  link-dark">
-
-                                Danh sách đơn hàng
-                            </a>
-                        </li>
-                        <li>
-                            <a href="book-request.php" class="nav-link  link-dark">
-
-                                Yêu cầu sách
+                            <?= getLang('change_pass') ?>
                             </a>
                         </li>
                         <li>
                             <a href="logout.php" class="nav-link link-dark">
 
-                                Đăng xuất
+                                <?= getLang('logout') ?>
                             </a>
                         </li>
 
                     </ul>
-                    <hr>
-
                 </div>
             </div>
             <div class=" col-xl-9 col-lg-9 col-md-12 col-sm-12">
-                <H4 class="mb-4 font-weight-bold">ĐỔI MẬT KHẨU</H4>
+                <H4 class="mb-4 font-weight-bold"><?= getLang('change_pass') ?></H4>
                 <?php if (!empty($errors)) : ?>
                     <div class="alert alert-danger text-center" role="alert">
                         <?php foreach ($errors as $error) : ?>
@@ -113,21 +99,21 @@ if (isset($_POST['change'])) {
                 <?php endif; ?>
                 <form class="mt-2" action="change-password.php" method="post">
                     <div class="mb-3">
-                        <label for="inputPassword1" class="col-form-label">Mật khẩu hiện tại</label>
+                        <label for="inputPassword1" class="col-form-label"><?= getLang('current_pd') ?></label>
                         <input type="password" name="cpassword" class="form-control" id="inputPassword1">
                     </div>
                     <div class="mb-3">
-                        <label for="inputPassword2" class="col-form-label">Mật khẩu mới</label>
+                        <label for="inputPassword2" class="col-form-label"><?= getLang('new_pd') ?></label>
                         <input type="password" name="password" class="form-control" id="inputPassword2">
                     </div>
                     <div class="mb-3">
-                        <label for="inputPassword3" class="col-form-label">Nhập lại mật khẩu</label>
+                        <label for="inputPassword3" class="col-form-label"><?= getLang('re_password') ?></label>
                         <input type="password" name="rpassword" class="form-control" id="inputPassword3">
                     </div>
                     <div class="mb-3">
                         <div class="m-auto">
                             <button type="submit" name="change" class="btn btn-primary">
-                                Lưu thay đổi
+                                <?= getLang('save')?>
                             </button>
                         </div>
                     </div>

@@ -1,10 +1,13 @@
+<?php require_once("templates/header.php") ?>
 <?php
-session_start();
+if (session_status() == PHP_SESSION_NONE) {
+    session_start();
+}
 include('config/db_connect.php');
 
 
 $noti = "";
-if (isset($_GET['status']))  $noti = $_GET['status'] == 0 ? "Đăng ký thành công, vui lòng kiểm tra email để kích hoạt tài khoản" : "Kích hoạt tài khoản thành công";
+if (isset($_GET['status']))  $noti = $_GET['status'] == 0 ? getLang('content_noti_0') : getLang('content_noti_ss');
 if (isset($_POST['submit-login'])) {
 
 	$email = $_POST['email'];
@@ -21,31 +24,35 @@ if (isset($_POST['submit-login'])) {
 			$errors['all'] = "Tài khoản chưa được kích hoạt";
 		} else {
 			if (password_verify($password, $pass_saved)) {
-
 				$_SESSION['email'] = $user_logged['cus_mail'];
 				$_SESSION['name'] = $user_logged['cus_name'];
 				$_SESSION['id'] = $user_logged['cus_id'];
+				$user_id = $user_logged['cus_id'];
+				$sql = "select id from logs_login where user_id = $user_id";
+				$res = mysqli_query($conn, $sql);
+				$current_time = time();
+				if(mysqli_num_rows($res) > 0){
+					$id_log = mysqli_fetch_assoc($res)['id'];
+					$sql = "update logs_login set last_login = current_login, current_login = $current_time";
+					mysqli_query($conn, $sql);
+				}else{
+					$sql = "insert into logs_login(user_id, last_login, current_login) values($user_id, $current_time, $current_time)";
+					mysqli_query($conn,$sql);
+				}
 				header('Location: index.php');
 			} else {
-				$errors['all'] = "Tên đăng nhập hoặc mật khẩu không chính xác";
+				$errors['all'] = getLang('content_erro_pd');
 				$email = $password  = "";
 			}
 		}
 	} else {
-		$errors['all'] = "Tên đăng nhập hoặc mật khẩu không chính xác";
+		$errors['all'] = getLang('content_erro_pd');
 		$email = $password  = "";
 	}
 }
 
 
 ?>
-
-
-<!DOCTYPE html>
-<html lang="zxx">
-
-<?php require_once("templates/header.php") ?>
-
 <div class="site-wrapper" id="top">
 	<!--==============================================Login Register page content==============================================-->
 	<main class="page-section inner-page-sec-padding-bottom">
@@ -58,7 +65,7 @@ if (isset($_POST['submit-login'])) {
 								<div class="row justify-content-center">
 
 									<div class="col-md-10 col-lg-6 col-xl-6 order-2 order-lg-1">
-										<p class="text-center h2 fw-bold mb-5 mx-1 mx-md-4 mt-4">Đăng nhập</p>
+										<p class="text-center h2 fw-bold mb-5 mx-1 mx-md-4 mt-4"><?= getLang('content_login') ?></p>
 										<?php if (isset($_GET['status'])) : ?>
 											<div class="alert alert-success text-center " role="alert">
 												<?php echo $noti ?>
@@ -74,29 +81,22 @@ if (isset($_POST['submit-login'])) {
 
 												<div class="row">
 													<div class="col-md-12 col-12 mb--15">
-														<label for="email">Email</label>
-														<input class="mb-0 form-control" name="email" type="email" id="email1" placeholder="Nhập email tại đây...">
+														<label for="email"><?= getLang('email')?></label>
+														<input class="mb-0 form-control" name="email" type="email" id="email1" placeholder="<?= getLang('placeholder_email') ?>">
 													</div>
 													<div class="col-12 mb--20">
-														<label for="password">Password</label>
-														<input class="mb-0 form-control" name="password" type="password" id="login-password" placeholder="Nhập mật khẩu">
+														<label for="password"><?= getLang('content_password')?></label>
+														<input class="mb-0 form-control" name="password" type="password" id="login-password" placeholder="<?= getLang('placeholder_password')?>">
 													</div>
 
 												</div>
 
 												
-												<p class="font-weight-bold">Bạn chưa có tài khoản? <a href="register.php" class="link-info text-primary">Đăng ký tại đây</a></p>
+												<p class="font-weight-bold"><?= getLang('content_question_account')?> <a href="register.php" class="link-info text-primary"><?= getLang('content_this_regist')?></a></p>
 
 												<div class="pt-1 mb-4 ">
-													<button class="btn btn-dark btn-lg w-100" name="submit-login" type="submit">Đăng nhập</button>
+													<button class="btn btn-dark btn-lg w-100" name="submit-login" type="submit"><?= getLang('content_login')?></button>
 												</div>
-
-												<div class="divider d-flex text-center align-items-center my-4">
-													<p class="text-center fw-bold mx-3 mb-0 text-muted m-auto">Hoặc</p>
-												</div>
-
-												<button class="btn btn-outline-danger w-100 mb-3" type="button"><i class="fab fa-google mx-2 me-2"></i>Đăng nhập với google</button>
-												<button class="btn btn-outline-primary w-100" type="button"><i class="fab fa-facebook-f mx-2 me-2"></i>Đăng nhập với facebook</button>
 
 											</form>
 

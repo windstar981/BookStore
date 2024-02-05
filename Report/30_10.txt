@@ -1,1 +1,0 @@
-- Làm login, change pass, hiển thị thông tin các user, sửa các lỗi lặt vặt.

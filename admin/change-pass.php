@@ -49,7 +49,7 @@ if (isset($_POST['change-pass'])) {
     <div class="container">
         <div class="page-header">
 
-            <h1 class="page-header__title">Đổi mật khẩu </h1>
+            <h1 class="page-header__title"><?= getLang('change_pass') ?> </h1>
         </div>
         <div class="page-tools">
             <div class="page-tools__breadcrumbs">
@@ -66,12 +66,12 @@ if (isset($_POST['change-pass'])) {
                                     </svg>
                                 </a>
                             </li>
-                            <li class="breadcrumbs__item disabled"><a class="breadcrumbs__link" href="#"><span>Quản lý tài khoản</span>
+                            <li class="breadcrumbs__item disabled"><a class="breadcrumbs__link" href="#"><span><?= getLang('manage_account') ?></span>
                                     <svg class="icon-icon-keyboard-right breadcrumbs__arrow">
                                         <use xlink:href="#icon-keyboard-right"></use>
                                     </svg></a>
                             </li>
-                            <li class="breadcrumbs__item active"><span class="breadcrumbs__link">Đổi nật khẩu</span>
+                            <li class="breadcrumbs__item active"><span class="breadcrumbs__link"><?= getLang('change_pd') ?></span>
                             </li>
                         </ol>
                     </div>
@@ -83,12 +83,12 @@ if (isset($_POST['change-pass'])) {
             $errors = "";
             switch ($_GET['errors']) {
                 case '1':
-                    $errors = "Vui lòng nhập đầy đủ thông tin";
+                    $errors = getLang('enter_all_info');
                     break;
                 case '2':
-                    $errors = "Mật khẩu không khớp";
+                    $errors = getLang('password_mismatch');
                 case '3':
-                    $errors = "Mật khẩu hiện tại không chính xác";
+                    $errors = getLang('pd_current_false');
             }
         ?>
             <div class="alert alert-danger text-center" role="alert">
@@ -96,7 +96,7 @@ if (isset($_POST['change-pass'])) {
             </div>
         <?php endif; ?>
         <?php if (isset($_GET['succes'])) :
-            $succes = "Đổi mật khẩu thành công";
+            $succes = getLang('change_pd_true');
 
         ?>
             <div class="alert alert-success text-center" role="alert">
@@ -109,19 +109,19 @@ if (isset($_POST['change-pass'])) {
             <div class="row">
 
                 <div class="col-12 form-group form-group--lg">
-                    <label class="form-label form-label--sm">Mật khẩu hiện tại</label>
+                    <label class="form-label form-label--sm"><?= getLang('current_pd') ?></label>
                     <div class="input-group">
                         <input class="form-control" name="cpassword" id="exampleFormControlInput2" name="fullname" type="password" placeholderrequired>
                     </div>
                 </div>
                 <div class="col-12 form-group form-group--lg">
-                    <label class="form-label form-label--sm">Mật khẩu mới</label>
+                    <label class="form-label form-label--sm"><?= getLang('new_pd') ?></label>
                     <div class="input-group">
                         <input class="form-control" name="password" id="exampleFormControlInput3" name="password" type="password" required>
                     </div>
                 </div>
                 <div class="col-12 form-group form-group--lg">
-                    <label class="form-label form-label--sm">Nhập lại mật khẩu</label>
+                    <label class="form-label form-label--sm"><?=  getLang('re_password') ?></label>
                     <div class="input-group">
                         <input class="form-control" name="rpassword" id="exampleFormControlInput3" name="password" type="password" required>
                     </div>
@@ -130,7 +130,7 @@ if (isset($_POST['change-pass'])) {
 
                 <div class="col-auto m-auto">
                     <button type="submit" id="change-pass" name="change-pass" class="button button--primary" data-dismiss="modal">
-                        Lưu thay đổi
+                        <?= getLang('save') ?>
                     </button>
                 </div>
             </div>

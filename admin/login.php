@@ -22,7 +22,6 @@ if (isset($_POST['submit-login'])) {
             $_SESSION['full_name'] = $user_logged['u_fullname'];
             $_SESSION['u_id'] = $user_logged['u_id'];
             $_SESSION['level'] = $user_logged['level'];
-
             header('Location: index.php');
         } else {
             header("Location: login.php?errors=1");
@@ -38,8 +37,6 @@ if (isset($_POST['submit-login'])) {
 ?>
 
 
-
-
 <!DOCTYPE html>
 <html class="no-js" lang="en" data-theme="light">
 
@@ -49,7 +46,7 @@ if (isset($_POST['submit-login'])) {
     <meta name="MobileOptimized" content="320" />
     <meta name="HandheldFriendly" content="True" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Arion Admin Dashboard</title>
+    <title>Admin</title>
     <meta name="description" content="Arion — This is the best dashboard" />
     <meta name="msapplication-tap-highlight" content="no" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -357,39 +354,39 @@ if (isset($_POST['submit-login'])) {
             <div class="page-auth__center">
                 <div class="page-auth__screen">
                     <div class="auth-logo">
-                        <img class="auth-logo__icon" src="img/content/logotype.svg" width="44" alt="#" />
+                        <img class="auth-logo__icon" src="img/letter.png" width="44" alt="#" />
                         <div class="auth-logo__text">Bookstore</div>
                     </div>
-                    <img class="page-auth__screen-bg auth-bg-image-light" src="img/banner/login.jpg" alt="#">
-                    <img class="page-auth__screen-bg auth-bg-image-dark" src="img/content/auth-bg-dark.jpg" alt="#">
+                    <img class="page-auth__screen-bg auth-bg-image-light" src="img/letter.png" alt="#">
+                    <img class="page-auth__screen-bg auth-bg-image-dark" src="img/letter.png" alt="#">
                 </div>
                 <div class="auth-card card">
                     <div class="card__wrapper">
                         <div class="auth-card__left">
                             <div class="auth-card__logo">
                                 <div class="auth-logo">
-                                    <img class="auth-logo__icon" src="img/content/logotype.svg" width="44" alt="#" />
+                                    <img class="auth-logo__icon" src="img/letter.png" width="44" alt="#" />
                                     <div class="auth-logo__text">Bookstore</div>
                                 </div>
                             </div>
-                            <img class="auth-card__bg auth-bg-image-light" src="img/banner/login.jpg" alt="#">
-                            <img class="auth-card__bg auth-bg-image-dark" src="img/content/auth-bg-dark.jpg" alt="#">
+                            <img class="auth-card__bg auth-bg-image-light" src="img/letter.png" alt="#">
+                            <img class="auth-card__bg auth-bg-image-dark" src="img/letter.png" alt="#">
                         </div>
                         <form class="auth-card__right" action="login.php" method="POST">
                             <div class="auth-card__top">
-                                <h1 class="auth-card__title">Chào mừng</h1>
-                                <p class="auth-card__text">Xin chào, vui lòng đăng nhập
-                                    <br>vào tài khoản nếu bạn là admin.
+                                <h1 class="auth-card__title">Welcom</h1>
+                                <p class="auth-card__text">Hello, please login
+                                    <br>Log into your account if you are an admin.
                                 </p>
                             </div>
                             <?php if (isset($_GET['errors'])) :
                                 $errors = "";
                                 switch ($_GET['errors']) {
                                     case '1':
-                                        $errors = "Tên đăng nhập hoặc mật khẩu không chính xác";
+                                        $errors = "Incorrect username or password";
                                         break;
                                     case '2':
-                                        $errors = "Vui lòng điền đầy đủ thông tin";
+                                        $errors = "Please fill in all the required information";
                                         break;
                                 }
                             ?>
@@ -403,7 +400,7 @@ if (isset($_POST['submit-login'])) {
                                             <svg class="icon-icon-user">
                                                 <use xlink:href="#icon-user"></use>
                                             </svg></span>
-                                        <input class="input" name="username" placeholder="Nhập tên đăng nhập" type="text" required>
+                                        <input class="input" name="username" placeholder="Enter the username" type="text" required>
                                     </div>
                                 </div>
                                 <div class="form-group">
@@ -411,7 +408,7 @@ if (isset($_POST['submit-login'])) {
                                             <svg class="icon-icon-password">
                                                 <use xlink:href="#icon-password"></use>
                                             </svg></span>
-                                        <input class="input" name="password" placeholder="Nhập mật khẩu của bạn" type="password" required>
+                                        <input class="input" name="password" placeholder="Enter your password" type="password" required>
                                     </div>
                                 </div>
                                 <div class="auth-card__button mt-5">

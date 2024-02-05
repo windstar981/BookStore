@@ -7,7 +7,7 @@
     <meta name="MobileOptimized" content="320" />
     <meta name="HandheldFriendly" content="True" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Arion Admin Dashboard</title>
+    <title>404</title>
     <meta name="description" content="Arion — This is the best dashboard" />
     <meta name="msapplication-tap-highlight" content="no" />
     <meta name="mobile-web-app-capable" content="yes" />
@@ -436,8 +436,8 @@
         <main class="page-error">
             <div class="page-error__content">
                 <div class="page-error__type">404</div>
-                <h1 class="page-error__title">Không tìm thấy trang</h1>
-                <div class="page-error__bottom"><a class="button button--primary" href="index.php"><span class="button__text">Về trang chủ</span></a>
+                <h1 class="page-error__title">NOT FOUND!!!</h1>
+                <div class="page-error__bottom"><a class="button button--primary" href="index.php"><span class="button__text">Go Back Home</span></a>
                 </div>
             </div>
         </main>

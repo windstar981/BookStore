@@ -1,7 +1,30 @@
 <?php
+include('config/db_connect.php');
 session_start();
 
-include('config/db_connect.php');
+$postsPerPage = 10;
+
+if (isset($_GET['page'])) {
+    $currentPage = $_GET['page'];
+} else {
+    $currentPage = 1;
+}
+
+$start = ($currentPage - 1) * $postsPerPage;
+$searchTerm = "";
+if (isset($_GET['search']) && !empty($_GET['search'])) {
+    // Nếu có, thực hiện truy vấn tìm kiếm
+    $searchTerm = $_GET['search'];
+    $sql = "SELECT * FROM article WHERE title LIKE '%$searchTerm%' ORDER BY created_at DESC";
+    $result = $conn->query($sql);
+} else {
+    // Nếu không, thực hiện truy vấn hiển thị bình thường
+    $sql = "SELECT * FROM article ORDER BY created_at DESC LIMIT $start, $postsPerPage";
+    $result = $conn->query($sql);
+}
+
+$totalPosts = $conn->query("SELECT COUNT(id) as total FROM article")->fetch_assoc()['total'];
+$totalPages = ceil($totalPosts / $postsPerPage);
 ?>
 
 
@@ -10,320 +33,110 @@ include('config/db_connect.php');
 <html lang="en">
 <?php require_once("templates/header.php") ?>
 <?php include('config/db_connect.php'); ?>
+<link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+<style>
+        body {
+            font-family: 'Arial', sans-serif;
+            /* background-color: #f8f9fa; */
+            background-color: pink;
+            padding: 20px;
+        }
 
-<div class="site-wrapper" id="top">
+        h2 {
+            color: #343a40;
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
+        .post {
+            background-color: #ffffff96;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            position: relative;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+        }
 
-    <!--=================================
-        banner sách hot
-    ===================================== -->
-    <section class="hero-area hero-slider-3">
-        <div class="sb-slick-slider" data-slick-setting='{
-                                                        "autoplay": true,
-                                                        "autoplaySpeed": 8000,
-                                                        "slidesToShow": 1,
-                                                        "dots":true
-                                                        }'>
+        .post img {
+            max-width: 150px;
+            max-height: 150px;
+            border-radius: 8px;
+            margin-right: 20px;
+        }
 
+        .post-content {
+            flex-grow: 1;
+        }
 
-            <!-- --------------------------------------------- Banner ---------------------------------------------------------------------------------- -->
+        .post-title {
+            color: #343a40;
+        }
 
-            <?php $sql = "SELECT * FROM banners";
-            $res = mysqli_query($conn, $sql);
-            $banners = mysqli_fetch_all($res, MYSQLI_ASSOC);
+        .post-description {
+            color: #6c757d;
+            margin-top: 10px;
+        }
 
-            ?>
-            <?php
-            foreach ($banners as $banner) :
-            ?>
+        .pagination {
+            justify-content: center !important;
+            margin-top: 20px;
+        }
 
-                <div class="single-slide bg-image img-fluid" data-bg="">
-                <a href="<?php echo $banner['ba_link'] ?>"><img src="admin/<?php echo $banner['ba_image'] ?>" style="width:100%" alt="#"></a>
-                    
-                </div>
-
-            <?php endforeach; ?>
-
-
-
+        .btn {
+            margin-right: 10px;
+        }
+    </style>
+<main class="page-content">
+<div class="container">
+        <h2><?= getLang('list_email') ?></h2>
+        <form action="index.php" method="GET" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="<?= getLang('placeholder_search') ?>" value="<?php echo $searchTerm;?>">
+            <button type="submit" class="btn btn-secondary"><?= getLang('search') ?></button>
         </div>
-    </section>
-    <!-- sách hot -->
-    <section class="section-margin mt-5">
-        <div class="container">
-            <div class="section-title section-title--bordered">
-                <h2>Sản phẩm HOT</h2>
-            </div>
-            <div class="product-slider sb-slick-slider slider-border-single-row" data-slick-setting='{
-                        "autoplay": true,
-                        "autoplaySpeed": 8000,
-                        "slidesToShow": 5,
-                        "dots":true
-                    }' data-slick-responsive='[
-                        {"breakpoint":1200, "settings": {"slidesToShow": 4} },
-                        {"breakpoint":992, "settings": {"slidesToShow": 3} },
-                        {"breakpoint":768, "settings": {"slidesToShow": 2} },
-                        {"breakpoint":480, "settings": {"slidesToShow": 1} },
-                        {"breakpoint":320, "settings": {"slidesToShow": 1} }
-                    ]'>
+    </form>
+        <?php
+        $num_rows = $result->num_rows;
+        if ($num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                echo '<div class="post">';
+                echo '<a href ="view.php?id='.$row['id'].'"><img src="admin/' . $row['img'] . '" alt="' . $row['title'] . '" class="img-fluid" style="max-width: 150px;"></a>';
+                echo '<div class="post-content">';
+                echo '<h3 class="post-title mb-3"><a href ="view.php?id='.$row['id'].'">' . $row['title'] . '</a></h3>';
+                echo '<p class="post-description mb-3">' . $row['abstract'] . '</p>';
+                echo '<p class="mb-2"><strong>'.getLang('created_at').':</strong> ' . date('d-m-Y', $row['created_at']) . '</p>';
+                echo '</div>';
+                echo '</div>';
+            }
+        } else {
+            echo "<p>Không có bài viết nào.</p>";
+        }
+        ?>
+        <div style="display: flex; flex-direction: column;" class="mb-3">
+            <ul class="pagination" style="background-clip: text;">
                 <?php
-                $sl_id = "SELECT  od.pr_id, count(od.or_id) FROM orderdetail od, orders ors 
-                where od.or_id = ors.or_id and DATEDIFF(CURDATE(), ors.or_date)<=7 
-                GROUP BY od.pr_id ORDER BY  count(od.or_id) DESC LIMIT 7";
-                $list_id = mysqli_query($conn, $sl_id);
-                while ($row_id = mysqli_fetch_assoc($list_id)) {
-                    $products_id = $row_id['pr_id'];
-
-                    $sql = "SELECT  * FROM `products` where pr_id = $products_id and pr_status !=1 limit 7";
-                    $res = mysqli_query($conn, $sql);
-                    while ($row_romance = mysqli_fetch_assoc($res)) {
-                        $name_img = explode(",", $row_romance['pr_img'])[0]; ?>
-                        <div class="single-slide">
-                            <div class="product-card">
-
-                                <div class="product-card--body">
-                                    <div class="card-image">
-
-                                        <img src="admin/<?php echo $name_img; ?>" class="m-auto" style="width:190px; height:190px;" alt="">
-                                        <div class="hover-contents">
-
-                                            <div class="hover-btns">
-                                                <a href="#" class="single-btn add_cart" value="<?php echo $row_romance['pr_id']; ?>">
-                                                    <i class="fas fa-cart-plus"></i>
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="product-header mt-2">
-                                    <h3><a href="product-details.php?idsp=<?php echo $row_romance['pr_id']; ?>"><?php echo $row_romance['pr_name']; ?> </a></h3>
-                                </div>
-                                <div class="price-block">
-                                    <span class="price"><?php echo number_format($row_romance['pr_price'] - $row_romance['pr_discount'], 0, ',', '.') . " VNĐ"; ?></span>
-                                    <del class="price-old"><?php echo number_format($row_romance['pr_price'], 0, ',', '.') . " VNĐ"; ?></del>
-                                    <span class="price-discount"><?php echo ceil(($row_romance['pr_discount']) / ($row_romance['pr_price']) * 100) ?>%</span>
-                                </div>
-                            </div>
-                        </div>
-                <?php  }
-                } ?>
-            </div>
-        </div>
-    </section>
-
-    <!-- gợi ý hôm nay -->
-    <section class="section-margin mt-5">
-        <div class="container">
-            <div class="section-title section-title--bordered">
-                <h2>Gợi ý cho bạn hôm nay</h2>
-            </div>
-            <div class="product-slider sb-slick-slider slider-border-single-row" data-slick-setting='{
-                        "autoplay": true,
-                        "autoplaySpeed": 8000,
-                        "slidesToShow": 5,
-                        "dots":true
-                    }' data-slick-responsive='[
-                        {"breakpoint":1200, "settings": {"slidesToShow": 4} },
-                        {"breakpoint":992, "settings": {"slidesToShow": 3} },
-                        {"breakpoint":768, "settings": {"slidesToShow": 2} },
-                        {"breakpoint":480, "settings": {"slidesToShow": 1} },
-                        {"breakpoint":320, "settings": {"slidesToShow": 1} }
-                    ]'>
-                <?php
-
-                //create table virtual
-                $create_table = "CREATE TEMPORARY TABLE productnew as 
-                ((SELECT  `pr_name`, `pr_author`, `pr_pub`, `pr_status`, `pr_category`, `pr_code`, `pr_number`, `pr_price`, `pr_discount`, `pr_img`, `pr_date`, `pr_desc`,orderdetail.or_id,orderdetail.pr_id,orders.or_date, COUNT(orderdetail.or_id) as number 
-                from orders, orderdetail, products 
-                where orders.or_id = orderdetail.or_id and  orderdetail.pr_id = products.pr_id 
-                GROUP BY orderdetail.pr_id HAVING  datediff(date(curdate()), date(orders.or_date))<=3 
-                ORDER BY COUNT(orderdetail.or_id) DESC))";
-                mysqli_query($conn, $create_table);
-
-                // $sl_recommend = "SELECT *, COUNT(orderdetail.or_id) 
-                // from orders, orderdetail, products 
-                // where orders.or_id = orderdetail.or_id and  orderdetail.pr_id = products.pr_id 
-                // GROUP BY orderdetail.or_id 
-                // HAVING  datediff(date(curdate()), date(orders.or_date))<=3 
-                // ORDER BY COUNT(orderdetail.or_id) DESC 
-                // LIMIT 10;";
-                $sl_recommend = "SELECT *, sum(productnew.number) as sum FROM productnew, category 
-                WHERE productnew.pr_category = category.c_id and pr_status !=1 GROUP BY pr_id ORDER BY SUM(productnew.number) DESC LIMIT 10";
-                $res_recommend = mysqli_query($conn, $sl_recommend);
-                // echo mysqli_num_rows($res_recommend);
-                // exit;
-                while ($row_recommend = mysqli_fetch_assoc($res_recommend)) {
-                    $name_img = explode(",", $row_recommend['pr_img'])[0]; ?>
-                    <div class="single-slide">
-                        <div class="product-card">
-
-                            <div class="product-card--body">
-                                <div class="card-image">
-                                    <img src="admin/<?php echo $name_img; ?>" class="m-auto" style="width:190px; height:190px;" alt="">
-                                    <div class="hover-contents">
-
-                                        <div class="hover-btns">
-                                            <a href="#" class="single-btn add_cart" value="<?php echo $row_recommend['pr_id']; ?>">
-                                                <i class="fas fa-cart-plus"></i>
-                                            </a>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="product-header mt-2">
-                                    <h3><a href="product-details.php?idsp=<?php echo $row_recommend['pr_id']; ?>"><?php echo $row_recommend['pr_name']; ?> </a></h3>
-                                </div>
-                                <div class="price-block">
-                                    <span class="price"><?php echo number_format($row_recommend['pr_price'] - $row_recommend['pr_discount'], 0, ',', '.') . " VNĐ"; ?></span>
-                                    <del class="price-old"><?php echo number_format($row_recommend['pr_price'], 0, ',', '.') . " VNĐ"; ?></del>
-                                    <span class="price-discount"><?php echo CEIL(($row_recommend['pr_discount']) / ($row_recommend['pr_price']) * 100); ?>%</span>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <?php  }  ?>
-            </div>
-        </div>
-    </section>
-    <!-- in ra các thể loại -->
-    <?php
-    $sl_category = "SELECT * from category";
-    $res_category = mysqli_query($conn, $sl_category);
-    while ($row_category = mysqli_fetch_assoc($res_category)) { ?>
-        <section class="section-margin">
-            <div class="container">
-                <div class="section-title section-title--bordered">
-                    <h2><?php echo $row_category['c_name'] ?></h2>
-                </div>
-                <div class="product-slider sb-slick-slider slider-border-single-row" data-slick-setting='{
-                        "autoplay": true,
-                        "autoplaySpeed": 8000,
-                        "slidesToShow": 5,
-                        "dots":true
-                    }' data-slick-responsive='[
-                        {"breakpoint":1200, "settings": {"slidesToShow": 4} },
-                        {"breakpoint":992, "settings": {"slidesToShow": 3} },
-                        {"breakpoint":768, "settings": {"slidesToShow": 2} },
-                        {"breakpoint":480, "settings": {"slidesToShow": 1} },
-                        {"breakpoint":320, "settings": {"slidesToShow": 1} }
-                    ]'>
-                    <!-- thêm sản phẩm theo loại -->
-                    <?php
-                    $c_id = $row_category['c_id'];
-                    $sl_romance = "SELECT * from products, category where products.pr_category = category.c_id and products.pr_category = $c_id  and pr_status !=1 limit 8";
-                    $res_romance = mysqli_query($conn, $sl_romance);
-                    while ($row_romance = mysqli_fetch_assoc($res_romance)) {
-                        //xử lí lấy ảnh ra
-                        $name_img = explode(",", $row_romance['pr_img'])[0];
-
-                    ?>
-
-                        <div class="single-slide">
-                            <div class="product-card">
-
-                                <div class="product-card--body">
-                                    <div class="card-image">
-                                        <img src="admin/<?php echo $name_img; ?>" class="m-auto" style="width:190px; height:190px;" alt="">
-                                        <div class="hover-contents">
-                                            <div class="hover-btns">
-                                                <a class="single-btn add_cart" value="<?php echo $row_romance['pr_id']; ?>">
-                                                    <i class="fas fa-cart-plus"></i>
-                                                </a>
-
-                                                <!-- <a href="product-details.php?idsp=<?php echo $row_romance['pr_id']; ?>" class="single-btn">
-                                                        <i class="fas fa-eye"></i>
-                                                    </a> -->
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="product-header mt-2">
-                                        <h3><a href="product-details.php?idsp=<?php echo $row_romance['pr_id']; ?>"><?php echo $row_romance['pr_name']; ?> </a></h3>
-                                    </div>
-                                    <div class="price-block">
-                                        <span class="price"><?php echo number_format($row_romance['pr_price'] - $row_romance['pr_discount'], 0, ',', '.') . " VNĐ"; ?></span>
-                                        <del class="price-old"><?php echo number_format($row_romance['pr_price'], 0, ',', '.') . " VNĐ"; ?></del>
-                                        <span class="price-discount"><?php echo ceil((($row_romance['pr_discount']) / ($row_romance['pr_price']) * 100)); ?> %</span>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    <?php
+                if ($num_rows > 0)
+                {
+                    for ($i = 1; $i <= $totalPages; $i++) {
+                        echo "<li class='page-item'><a class='page-link' href='index.php?page=$i";
+                        if($searchTerm != ""){
+                            echo "&search=".$searchTerm;
+                        }
+                        echo "'>$i</a></li>";
                     }
-
-                    ?>
-                </div>
-            </div>
-        </section>
-    <?php }
-    //phan moi
-    ?>
-
-    <!-- ------------------------------------------------ Foreach Thể loại ------------------------------------------------------------------ -->
-
-    <!--=================================
-        Home Features Section
-    ===================================== -->
-    <section class="mb--30 space-dt--30">
-        <div class="container">
-            <div class="row">
-                <div class="col-xl-3 col-md-6 mt--30">
-                    <div class="feature-box h-100">
-                        <div class="icon">
-                            <i class="fas fa-shipping-fast"></i>
-                        </div>
-                        <div class="text">
-                            <h5>Free ship</h5><p>đơn hàng lớn hơn 500k</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6 mt--30">
-                    <div class="feature-box h-100">
-                        <div class="icon">
-                            <i class="fas fa-redo-alt"></i>
-                        </div>
-                        <div class="text">
-                            <h5>Đảm bảo hoàn tiền Hoàn lại 100% tiền</p>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6 mt--30">
-                    <div class="feature-box h-100">
-                        <div class="icon">
-                            <i class="fas fa-piggy-bank"></i>
-                        </div>
-                        <div class="text">
-                            <h5>Thanh toán khi nhận hàng</h5>
-                            
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-md-6 mt--30">
-                    <div class="feature-box h-100">
-                        <div class="icon">
-                            <i class="fas fa-life-ring"></i>
-                        </div>
-                        <div class="text">
-                            <h5>Hỗ trợ miễn phí</h5>
-                            <p>Gọi ngay: +8494724822</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+                }
+                ?>
+            </ul>
         </div>
-    </section>
-    <!--=================================
-        Promotion Section One
-    ===================================== -->
-    <!--=================================
-    Footer
-===================================== -->
-
-    <!--=================================
-  Brands Slider
-===================================== -->
+    </div>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
 
 
 
-</div>
 <?php require_once("templates/footer.php") ?>
 
 </html>

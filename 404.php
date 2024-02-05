@@ -10,13 +10,10 @@
             <div></div>
         </div>
         <h1>oops!</h1>
-        <h2>Lỗi 404 : Không tìm thấy trang</h2>
-        <a href="index.php">Về trang chủ</a>
+        <h2>404 NOT FOUND!!!</h2>
+        <a href="index.php">Go back home</a>
 
     </div>
 </div>
 <?php include('templates/footer.php'); ?>
-
-
-
 </html>

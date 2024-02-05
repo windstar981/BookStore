@@ -1,335 +1,145 @@
 <?php
-
+include('../config/db_connect.php');
 session_start();
 
+$postsPerPage = 10;
+
+if (isset($_GET['page'])) {
+    $currentPage = $_GET['page'];
+} else {
+    $currentPage = 1;
+}
+
+$start = ($currentPage - 1) * $postsPerPage;
+$searchTerm = "";
+if (isset($_GET['search']) && !empty($_GET['search'])) {
+    // Nếu có, thực hiện truy vấn tìm kiếm
+    $searchTerm = $_GET['search'];
+    $sql = "SELECT * FROM article WHERE title LIKE '%$searchTerm%' ORDER BY created_at DESC";
+    $result = $conn->query($sql);
+} else {
+    // Nếu không, thực hiện truy vấn hiển thị bình thường
+    $sql = "SELECT * FROM article ORDER BY created_at DESC LIMIT $start, $postsPerPage";
+    $result = $conn->query($sql);
+}
+
+$totalPosts = $conn->query("SELECT COUNT(id) as total FROM article")->fetch_assoc()['total'];
+$totalPages = ceil($totalPosts / $postsPerPage);
 ?>
 <!DOCTYPE html>
 <html class="no-js" lang="en" data-theme="light">
 
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet">
 
 
 <?php require_once("templates/header.php") ?>
-<?php
-include('config/db_connect.php');
-include('core/export_data.php');
-$sl_cus_new = "SELECT COUNT(cus_id) as new_cus FROM customers WHERE date(cus_create) = curdate()";
-$sl_cus_old = "SELECT COUNT(cus_id) as old_cus FROM customers WHERE date(cus_create) = subdate(current_date, 1)";
-$res_cus_new = mysqli_fetch_assoc(mysqli_query($conn,$sl_cus_new));
-$res_cus_old = mysqli_fetch_assoc(mysqli_query($conn,$sl_cus_old));
+<style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f8f9fa;
+            padding: 20px;
+        }
 
-$number_cus_new = $res_cus_new['new_cus'];
-$number_cus_old = $res_cus_old['old_cus'];
-//tỉ lệ tăng trưởng
-if($number_cus_old==0)
-{
-    $percent_customer = $number_cus_new;
-}
-else
-{
-    $percent_customer = (($number_cus_new-$number_cus_old)/$number_cus_old)*100;
-}
-//Chỉ Tiêu ngày hôm nay luôn lớn hơn ngày hôm trước
-if($number_cus_new-$number_cus_old>0)
-{
-    $chitieu1 = 100;
-}
-else
-{
-    $chitieu1 = 100-abs(($number_cus_new-$number_cus_old)/$number_cus_old)*100;
-}
-$sl_order_new = "SELECT COUNT(or_id) as new_or FROM orders WHERE date(or_date) = curdate()";
-$sl_order_old = "SELECT COUNT(or_id) as old_or FROM orders WHERE date(or_date) = subdate(current_date, 1)";
-$res_order_new = mysqli_fetch_assoc(mysqli_query($conn,$sl_order_new));
-$res_order_old = mysqli_fetch_assoc(mysqli_query($conn,$sl_order_old));
-$number_order_new = $res_order_new['new_or'];
-$number_order_old = $res_order_old['old_or'];
+        h2 {
+            color: #343a40;
+            text-align: center;
+            margin-bottom: 30px;
+        }
 
-if($number_cus_old==0)
-{
-    $percent_order = $number_order_new;
-}
-else
-{
-    $percent_order = (($number_order_new-$number_order_old)/$number_order_old)*100;
-}
-if($number_order_new-$number_order_old>0)
-{
-    $chitieu2 = 100;
-}
-else
-{
-    $chitieu2 = 100-abs(($number_order_new-$number_order_old)/$number_order_old)*100;
-    echo $chitieu2;
-    
-}
-$sl_sales_new = "SELECT sum(or_total) as new_sales FROM orders WHERE date(or_date) = curdate()";
-$sl_sales_old = "SELECT sum(or_total) as old_sales FROM orders WHERE date(or_date) = subdate(current_date, 1)";
-$res_sales_new = mysqli_fetch_assoc(mysqli_query($conn,$sl_sales_new));
-$res_sales_old = mysqli_fetch_assoc(mysqli_query($conn,$sl_sales_old));
-$number_sales_new= $res_sales_new['new_sales'];
-$number_sales_old = $res_sales_old['old_sales'];
-if($number_sales_old==0)
-{
-    $percent_sales = $number_sales_new; //% sales
-}
-else
-{
-    $percent_sales = (($number_sales_new-$number_sales_old)/$number_sales_old)*100;
-}
-if($number_sales_new-$number_sales_old>0)
-{
-    $chitieu3 = 100;
-}
-else
-{
-    $chitieu3 = 100-abs(($number_sales_new-$number_sales_old)/$number_sales_old)*100;
-}
-?>
+        .post {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            position: relative;
+            min-height: 150px;
+            display: flex;
+            align-items: center;
+        }
 
+        .post img {
+            max-width: 150px;
+            max-height: 150px;
+            border-radius: 8px;
+            margin-right: 20px;
+        }
+
+        .post-content {
+            flex-grow: 1;
+        }
+
+        .post-title {
+            color: #343a40;
+        }
+
+        .post-description {
+            color: #6c757d;
+            margin-top: 10px;
+        }
+
+        .pagination {
+            justify-content: center !important;
+            margin-top: 20px;
+        }
+
+        .btn {
+            margin-right: 10px;
+        }
+    </style>
 <main class="page-content">
-    <input type="text" class="d-none" id="getdata" value="<?php echo $lb; ?>">
-    <div class="container">
-        <div class="widgets">
-            <div class="widgets__row row gutter-bottom-xl">
-                <div class="col-12 col-md-6 col-xl-4 d-flex">
-                    <div class="widget">
-                        <div class="widget__wrapper">
-                            <div class="widget__row">
-                                <div class="widget__left">
-                                    <h3 class="widget__title">Khách hàng mới</h3>
-                                    <div class="widget__status-title text-grey">Số lượng đăng ký hôm nay</div>
-                                    <div class="widget__trade"><span class="widget__trade-count"><?php echo $number_cus_new; ?></span><span class="trade-icon trade-icon--up">
-                                                <!--up  -->
-                                        <?php
-                                            if($percent_customer>=0)
-                                            {?>
-                                                <svg class="icon-icon-trade-up">
-                                                <use xlink:href="#icon-trade-up"></use>
-                                            </svg></span><span class="badge badge--sm badge--green"><?php echo $percent_customer; ?>%</span>
-                                           <?php } 
-                                           else
-                                           {?>
-                                                <svg class="icon-icon-trade-down">
-                                                <use xlink:href="#icon-trade-down"></use>
-                                            </svg></span><span class="badge badge--sm badge--red"><?php echo $percent_customer; ?>%</span>
-                                          <?php }
-                                           
-                                           ?>
-                                            
-                                            
-                                    <!-- <svg class="icon-icon-trade-up">
-                                                <use xlink:href="#icon-trade-up"></use>
-                                            </svg></span><span class="badge badge--sm badge--green"><?php echo ceil($percent_customer); ?>%</span> -->
-                                            <!-- down -->
-                                            <!-- <svg class="icon-icon-trade-down">
-                                                <use xlink:href="#icon-trade-down"></use>
-                                            </svg></span><span class="badge badge--sm badge--red"><?php echo ceil($percent_order); ?>%</span> -->
-                                    </div>
-
-                                </div>
-                                <div class="widget__chart">
-                                    <div class="widget__chart-inner">
-                                        <div class="widget__chart-percentage"><?php echo ceil($chitieu1); ?><small>%</small>
-                                        </div>
-                                        <div class="widget__chart-caption">Chỉ tiêu</div>
-                                    </div>
-                                    <div class="widget__chart-canvas js-progress-circle" data-value="<?php echo $chitieu1/100; ?>" data-color="#22CCE2"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="col-12 col-md-6 col-xl-4 d-flex">
-                    <div class="widget">
-                        <div class="widget__wrapper">
-                            <div class="widget__row">
-                                <div class="widget__left">
-                                    <h3 class="widget__title">Đơn hàng</h3>
-                                    <div class="widget__status-title text-grey">Số lượng đơn hàng hôm nay</div>
-                                    <div class="widget__trade"><span class="widget__trade-count"><?php echo $number_order_new; ?></span><span class="trade-icon trade-icon--down">
-                                    <?php
-                                            if($percent_order>=0)
-                                            {?>
-                                                <svg class="icon-icon-trade-up">
-                                                <use xlink:href="#icon-trade-up"></use>
-                                            </svg></span><span class="badge badge--sm badge--green"><?php echo ceil($percent_order); ?>%</span>
-                                           <?php } 
-                                           else
-                                           {?>
-                                                <svg class="icon-icon-trade-down">
-                                                <use xlink:href="#icon-trade-down"></use>
-                                            </svg></span><span class="badge badge--sm badge--red"><?php echo ceil($percent_order); ?>%</span>
-                                          <?php }
-                                           
-                                           ?>
-                                    </div>
-
-                                </div>
-                                <div class="widget__chart">
-                                    <div class="widget__chart-inner">
-                                        <div class="widget__chart-percentage"><?php  echo ceil($chitieu2);?><small>%</small>
-                                        </div>
-                                        <div class="widget__chart-caption">Chỉ tiêu</div>
-                                    </div>
-                                    <div class="widget__chart-canvas js-progress-circle" data-value="<?php echo $chitieu2/100;?>" data-color="#FDBF5E"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-12 col-md-6 col-xl-4 d-flex">
-                    <div class="widget">
-                        <div class="widget__wrapper">
-                            <div class="widget__row">
-                                <div class="widget__left">
-                                    <h3 class="widget__title">Doanh thu</h3>
-                                    <div class="widget__status-title text-grey">Tổng doanh thu hôm nay</div>
-                                    <div class="widget__trade"><span class="widget__trade-count"><?php echo number_format( $number_sales_new, 0, ',', '.') . " VNĐ"; ?></span><span class="trade-icon trade-icon--down">
-                                    <?php
-                                            if($percent_sales>=0)
-                                            {?>
-                                                <svg class="icon-icon-trade-up">
-                                                <use xlink:href="#icon-trade-up"></use>
-                                            </svg></span><span class="badge badge--sm badge--green"><?php echo ceil($percent_sales); ?>%</span>
-                                           <?php } 
-                                           else
-                                           {?>
-                                                <svg class="icon-icon-trade-down">
-                                                <use xlink:href="#icon-trade-down"></use>
-                                            </svg></span><span class="badge badge--sm badge--red"><?php echo ceil($percent_sales); ?>%</span>
-                                          <?php }
-                                           
-                                           ?>
-                                    </div>
-
-                                </div>
-                                <div class="widget__chart">
-                                    <div class="widget__chart-inner">
-                                        <div class="widget__chart-percentage"><?php  echo ceil($chitieu3);?><small>%</small>
-                                        </div>
-                                        <div class="widget__chart-caption">Chỉ tiêu</div>
-                                    </div>
-                                    <div class="widget__chart-canvas js-progress-circle" data-value="<?php echo $chitieu3/100;?>" data-color="#FF3D57"></div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+<div class="container">
+        
+        <h2><?= getLang('manage_email') ?></h2>
+        <form action="index.php" method="GET" class="mb-3">
+        <div class="input-group">
+            <input type="text" name="search" class="form-control" placeholder="<?= getLang('placeholder_search') ?>" value="<?php echo $searchTerm;?>">
+            <button type="submit" class="btn btn-secondary"><?= getLang('search') ?></button>
         </div>
-        <section class="section">
-            <div class="section__title d-none">
-                <h2>Section</h2>
-            </div>
-            <div class="row justify-content-center gutter-bottom-xl">
-                <div class="col-12 col-lg-12 col-xl-12 d-flex">
-                    <div class="card">
-                        <div class="card__wrapper">
-                            <div class="card__container">
-                                <div class="card__header">
-                                    <div class="card__header-left">
-                                        <h3 class="card__header-title">Doanh thu</h3>
-                                    </div>
-
-
-
-                                </div>
-                                <div class="card__body">
-                                    <div class="card__widgets">
-                                        <div class="card__widgets-row gutter-bottom-sm">
-                                            <div class="card-widget">
-                                                <h4 class="card-widget__title">Tuần này</h4>
-                                                <div class="card-widget__trade"><span class="card-widget__count text-red"><?php echo number_format($sum_money_new, 0, ',', '.') . " VNĐ" ?></span><span class="trade-icon trade-icon--up">
-                                                        
-                                                <?php
-                                                    if($percent_money>=0)
-                                                    {?>
-                                                        <svg class="icon-icon-trade-up">
-                                                            <use xlink:href="#icon-trade-up"></use>
-                                                        </svg></span><span class="badge badge--green badge--sm"><?php echo ceil($percent_money); ?>%</span>
-                                                
-                                                    <?php }
-                                                    else
-                                                    {?>
-                                                        <svg class="icon-icon-trade-down">
-                                                            <use xlink:href="#icon-trade-down"></use>
-                                                        </svg></span><span class="badge badge--red badge--sm"><?php echo ceil($percent_money); ?>%</span>
-                                                   <?php }
-                                                    
-                                                ?>
-                                                </div>
-                                            </div>
-                                            <div class="card-widget">
-                                                <h4 class="card-widget__title">Tuần trước</h4>
-                                                <div class="card-widget__trade"><span class="card-widget__count text-grey"><?php echo number_format($sum_money_old, 0, ',', '.') . " VNĐ" ?></span><span class="trade-icon trade-icon--down">
-                                                <?php
-                                                    if($percent_money_old>=0)
-                                                    {?>
-                                                        <svg class="icon-icon-trade-up">
-                                                            <use xlink:href="#icon-trade-up"></use>
-                                                        </svg></span><span class="badge badge--green badge--sm"><?php echo ceil($percent_money_old); ?>%</span>
-                                               
-                                                    <?php }
-                                                    else
-                                                    {?>
-                                                        <svg class="icon-icon-trade-down">
-                                                            <use xlink:href="#icon-trade-down"></use>
-                                                        </svg></span><span class="badge badge--red badge--sm"><?php echo ceil($percent_money_old); ?>%</span>
-                                                   <?php }
-
-                                                ?>   
-                                                </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                    <div class="card__chart">
-                                        <div class="card__container card__container--gutter-sm">
-                                            <div class="card__chart-item chart-revenue" id="revenueChart" data-series="[<?php echo $val_old; ?>, <?php echo $val_new; ?>]"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </section>
-        <section class="section">
-            <div class="section__title d-none">
-                <h2>Section</h2>
-            </div>
-            <div class="row justify-content-center gutter-bottom-xl">
-                <div class="col-12 col-lg-12 col-xl-12 d-flex">
-                    <div class="card card--overview">
-                        <div class="card__wrapper">
-                            <div class="card__container">
-                                <div class="card__header">
-                                    <div class="card__header-left">
-                                        <h3 class="card__header-title">Số lượng sản phẩm bán được theo ngày</h3>
-                                    </div>
-
-
-                                </div>
-                                <div class="card__body">
-
-                                    <div class="card__chart">
-                                        <div class="card__container card__container--gutter-sm">
-                                            <div class="card__chart-item chart-overview" id="overviewLineChart" data-series="<?php echo $val_pr; ?>"></div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
+    </form>
+                <!-- Nút "Thêm" -->
+        <a href="add.php" class="btn btn-primary mb-3"><?= getLang('add_email') ?></a>
+        <?php
+        $num_rows = $result->num_rows;
+        if ($num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                echo '<div class="post">';
+                echo '<img src="' . $row['img'] . '" alt="' . $row['title'] . '" class="img-fluid" style="max-width: 150px;">';
+                echo '<div class="post-content">';
+                echo '<h3 class="post-title mb-3">' . $row['title'] . '</h3>';
+                echo '<p class="post-description mb-3">' . $row['abstract'] . '</p>';
+                echo '<p class="mb-2"><strong>'.getLang('created_at').':</strong> ' . date('d-m-Y', $row['created_at']) . '</p>';
+                // Nút "Sửa"
+                echo '<a href="edit.php?id=' . $row['id'] . '" class="btn btn-warning">'.getLang('edit').'</a>';
+                // Nút "Xóa"
+                echo '<a href="delete.php?id=' . $row['id'] . '" class="btn btn-danger">'.getLang('delete').'</a>';
+                echo '</div>';
+                echo '</div>';
+            }
+        } else {
+            echo "<p>Không có bài viết nào.</p>";
+        }
+        ?>
+        <div style="display: flex;
+    flex-direction: column;">
+            <ul class="pagination" style="background-clip: text;">
+                <?php
+                if ($num_rows > 0)
+                {
+                    for ($i = 1; $i <= $totalPages; $i++) {
+                        echo "<li class='page-item'><a class='page-link' href='index.php?page=$i";
+                        if($searchTerm != ""){
+                            echo "&search=".$searchTerm;
+                        }
+                        echo "'>$i</a></li>";
+                    }
+                }
+                ?>
+            </ul>
+        </div>
     </div>
 </main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
 
 <?php require_once("templates/footer.php") ?>
 
